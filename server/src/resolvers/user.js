@@ -19,12 +19,14 @@ Mutation: {
       const user = await model.User.findOne({ email });
       if (!user) {
         console.log(user);
+        return null;
         // handle error
       // return res.status(500).json({ msg: 'Email already exists' });
       }
       const match = await bcrypt.compare(password, user.password);
       if (!match) {
         console.log('not match password');
+        return null;
       }
       const token = generateToken(user);
       return {
