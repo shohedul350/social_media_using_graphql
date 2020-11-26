@@ -1,5 +1,5 @@
 import postResolvers from './post';
-import userResolver from './post';
+import userResolver from './user';
 
 const resolver = {
   Query: {

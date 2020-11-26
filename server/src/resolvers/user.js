@@ -1,34 +1,42 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-import { User } from '../models/index'
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import model from '../models/index';
 
-export default {
+const generateToken = (user) => {
+  const token = jwt.sign({
+    user,
+  }, `${process.env.SECRET}`, { expiresIn: '24h' });
+  return token;
+};
+const mutation = {
 Mutation: {
-   async register(_, { registerInput: { userName, email, password, confirmPassword }, context, info }){
-      const auth = await Model.User.findOne({ email });
+    async register(_,
+      {
+        registerInput: {
+          userName, email, password, confirmPassword,
+        },
+      }) {
+    // make sure user does not exit
+      const auth = await model.User.findOne({ email });
       if (auth) {
-      return res.status(500).json({ msg: 'Email already exists' });
-    }
-    bcrypt.hash(password, 11, (err, hash) => {
-      if (err) {
-        return res.status(500).json({ msg: 'Server Error' });
+        console.log(auth);
+        // handle error
+      // return res.status(500).json({ msg: 'Email already exists' });
       }
-      const newUser = new User({
+      const hash = await bcrypt.hash(password, 12);
+      const newUser = new model.User({
         userName,
         email,
         password: hash,
       });
-      newUser.save();
-      const token = jwt.sign({
-        newUser,
-      }, `${process.env.SERCRET}`, { expiresIn: '24h' });
-
-    });
-    return{
-      ...res._doc,
-      id: res._id,
-      token,
-    }
-  }
-}
-}
+      const res = await newUser.save();
+      const token = generateToken(res);
+      return {
+        ...res._doc,
+        id: res._id,
+        token,
+      };
+    },
+  },
+};
+export default mutation;

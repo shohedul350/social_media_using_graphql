@@ -24,6 +24,6 @@ input RegisterInput {
     getPosts: [Post]
   }
   type Mutation{
-    register(registerInput: register): user!
+    register(registerInput: RegisterInput): User!
   }
 `;
