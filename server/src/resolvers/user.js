@@ -10,6 +10,29 @@ const generateToken = (user) => {
 };
 const mutation = {
 Mutation: {
+    async login(_,
+      {
+        email,
+        password,
+      }) {
+    // make sure user does not exit
+      const user = await model.User.findOne({ email });
+      if (!user) {
+        console.log(user);
+        // handle error
+      // return res.status(500).json({ msg: 'Email already exists' });
+      }
+      const match = await bcrypt.compare(password, user.password);
+      if (!match) {
+        console.log('not match password');
+      }
+      const token = generateToken(user);
+      return {
+        ...user._doc,
+        id: user._id,
+        token,
+      };
+    },
     async register(_,
       {
         registerInput: {
@@ -17,9 +40,9 @@ Mutation: {
         },
       }) {
     // make sure user does not exit
-      const auth = await model.User.findOne({ email });
-      if (auth) {
-        console.log(auth);
+      const user = await model.User.findOne({ email });
+      if (user) {
+        console.log(user);
         // handle error
       // return res.status(500).json({ msg: 'Email already exists' });
       }
@@ -37,6 +60,8 @@ Mutation: {
         token,
       };
     },
+
   },
+
 };
 export default mutation;
