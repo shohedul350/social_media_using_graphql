@@ -9,7 +9,7 @@ dotenv.config({ path: './config/config.env' });
 
 // Provide resolver functions for your schema fields
 
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({ typeDefs, resolvers, context: ({ req }) => ({ req }) });
 
 const app = express();
 server.applyMiddleware({ app });
